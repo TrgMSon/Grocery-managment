@@ -17,6 +17,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
+import javax.swing.JDialog;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
@@ -25,7 +26,6 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ArrayList;
-import javax.swing.JDialog;
 
 //chọn tên liên kết phù hợp trong phần mô tả trên ggdoc, tạo báo cáo doanh thu theo tháng (select từ nhiều bảng)
 
@@ -107,6 +107,12 @@ class ButtonDetailPanel extends JPanel {
                         initInform(formEdit, "Vui lòng nhập đầy đủ thông tin khách hàng");
                         return;
                     }
+
+                    if (CustomerBusiness.isValidPhone(formEdit.getTxtPhone().getText()) == false) {
+                        initInform(formEdit, "Số điện thoại không hợp lệ, vui lòng nhập đủ 10 số");
+                        return;
+                    }
+
                     CustomerBusiness.updateCustomer(obj);
                     panelCustomer.loadData();
                 }

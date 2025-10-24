@@ -240,7 +240,7 @@ class WarehouseDetailPanel extends JPanel {
         for (WarehouseDetail i : list) {
             Object[] row = { i.getIdWarehouse(), i.getIdProduct(), i.getNameProduct(),
                     WarehouseDetailBusiness.getOrigin(i.getIdProduct()), i.getLastReceiveDate(),
-                    Format.normalizeNumber(String.valueOf(i.getQuantityInStock())),
+                    String.valueOf(i.getQuantityInStock()),
                     getStateProduct(i.getQuantityInStock()) };
             dtm.addRow(row);
         }
@@ -308,13 +308,20 @@ class AddingFrame extends JFrame {
                 SimpleDateFormat normalize = new SimpleDateFormat("yyyy-MM-dd");
                 String lastReceiveDate = normalize.format(date);
 
-                boolean hasChoosen = false; 
+                boolean hasChoosen = false;
                 JTable table = productPanel.getTableProduct();
                 for (int i = 0; i < table.getRowCount(); i++) {
                     if (table.getValueAt(i, 5) != null) {
                         String idProduct = (String) table.getValueAt(i, 0);
                         String nameProduct = (String) table.getValueAt(i, 1);
-                        int quantityInStock = Integer.parseInt((String) table.getValueAt(i, 5));
+
+                        int quantityInStock;
+                        String quantity = (String) table.getValueAt(i, 5);
+                        if (quantity.equals("")) {
+                            quantityInStock = 0;
+                        } else {
+                            quantityInStock = Integer.parseInt((String) table.getValueAt(i, 5));
+                        }
 
                         if (quantityInStock > 0) {
                             WarehouseDetail warehouseDetail = new WarehouseDetail(idWarehouse, idProduct, nameProduct,
@@ -467,13 +474,23 @@ class ButtonPanelWarehouse extends JPanel {
                         if (table.getValueAt(i, 5) != null) {
                             String idProduct = (String) table.getValueAt(i, 0);
                             String nameProduct = (String) table.getValueAt(i, 1);
-                            int quantityInStock = Integer.parseInt((String) table.getValueAt(i, 5));
 
-                            WarehouseDetail warehouseDetail = new WarehouseDetail(idWarehouse, idProduct, nameProduct,
-                                    lastReceiveDate,
-                                    quantityInStock);
+                            int quantityInStock;
+                            String quantity = (String) table.getValueAt(i, 5);
+                            if (quantity.equals("")) {
+                                quantityInStock = 0;
+                            } else {
+                                quantityInStock = Integer.parseInt((String) table.getValueAt(i, 5));
+                            }
 
-                            WarehouseDetailBusiness.addWarehouseDetail(warehouseDetail);
+                            if (quantityInStock > 0) {
+                                WarehouseDetail warehouseDetail = new WarehouseDetail(idWarehouse, idProduct,
+                                        nameProduct,
+                                        lastReceiveDate,
+                                        quantityInStock);
+
+                                WarehouseDetailBusiness.addWarehouseDetail(warehouseDetail);
+                            }
                         }
                     }
                 } else if (mode == Mode.EDIT) {

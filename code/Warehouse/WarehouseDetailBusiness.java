@@ -161,7 +161,8 @@ public class WarehouseDetailBusiness {
                     }
                     quantity = 0;
                 }
-                if (quantity == 0) break;
+                if (quantity == 0)
+                    break;
             }
             return quantity == 0;
 
@@ -239,9 +240,17 @@ public class WarehouseDetailBusiness {
         JTable table = productPanel.getTableProduct();
         for (int i = 0; i < table.getRowCount(); i++) {
             if (table.getValueAt(i, 5) != null) {
-                int quantityInStock = Integer.parseInt((String) table.getValueAt(i, 5));
+                int quantityInStock;
+                String quantity = (String) table.getValueAt(i, 5);
+                if (quantity.equals("")) {
+                    quantityInStock = 0;
+                } else {
+                    quantityInStock = Integer.parseInt((String) table.getValueAt(i, 5));
+                }
+                
                 sum += quantityInStock;
-                if (sum > maxCapacity) return true;
+                if (sum > maxCapacity)
+                    return true;
             }
         }
 
@@ -262,7 +271,8 @@ public class WarehouseDetailBusiness {
 
             while (rs.next()) {
                 sum += rs.getInt("quantityInStock");
-                if (sum > maxCapacity) return true;
+                if (sum > maxCapacity)
+                    return true;
             }
         } catch (SQLException e) {
             Logger.getLogger(WarehouseDetailBusiness.class.getName()).log(Level.SEVERE, null, e);

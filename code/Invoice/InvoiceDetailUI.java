@@ -117,13 +117,23 @@ class ButtonPanel extends JPanel {
                 for (int i = 0; i < table.getRowCount(); i++) {
                     if (table.getValueAt(i, 5) != null) {
                         String idProduct = (String) table.getValueAt(i, 0);
-                        Integer quantity = Integer.parseInt(Format.originalForm((String) table.getValueAt(i, 5)));
+                        
+                        Integer quantity;
+                        String tmp = (String) table.getValueAt(i, 5);
+                        if (tmp.equals("")) {
+                            quantity = 0;
+                        }
+                        else {
+                            quantity = Integer.parseInt((String) table.getValueAt(i, 5));
+                        }
+
+                        if (quantity == 0) continue;
+
                         BigDecimal cost = new BigDecimal(Format.originalForm(String.valueOf(table.getValueAt(i, 2))));
                         InvoiceDetailBusiness.addInvoiceDetail(idInvoice, idProduct, (String) table.getValueAt(i, 1), cost, quantity);
 
                         if (WarehouseDetailBusiness.decreaseQuantityInStock(idProduct, quantity, false) == true) {
-                            BigDecimal qty = new BigDecimal(
-                                    Format.originalForm(String.valueOf(table.getValueAt(i, 5))));
+                            BigDecimal qty = new BigDecimal(String.valueOf(quantity));
                             BigDecimal adding = cost.multiply(qty);
                             total = total.add(adding);
                             WarehouseDetailBusiness.decreaseQuantityInStock(idProduct, quantity, true);
@@ -138,6 +148,7 @@ class ButtonPanel extends JPanel {
                 if (total.equals(new BigDecimal("0"))) {
                     initInform(menuInvoiceDetail, "Vui lòng nhập số lượng sản phẩm");
                     InvoiceBusiness.deleteInvoice(idInvoice);
+                    productPanel.loadtData();
                     return;
                 }
 
@@ -357,7 +368,7 @@ class InvoiceDetailPanel extends JPanel {
         for (InvoiceDetail i : list) {
             Object[] row = { i.getIdProduct(), i.getNameProduct(),
                     Format.normalizeNumber(String.valueOf(i.getCostProduct())),
-                    Format.normalizeNumber(String.valueOf(i.getQuantity())) };
+                    String.valueOf(i.getQuantity()) };
             dtm.addRow(row);
         }
     }
