@@ -2,7 +2,6 @@ package Product;
 
 import Connection.DataConnection;
 import Product.ProductBusiness;
-// import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.PreparedStatement;

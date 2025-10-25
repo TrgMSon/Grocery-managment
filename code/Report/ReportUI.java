@@ -16,7 +16,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
 import javax.swing.JDialog;
-import Mode.Mode;
 import Format.Format;
 import Connection.DataConnection;
 import java.sql.Connection;
@@ -91,7 +90,6 @@ class ButtonPanel extends JPanel {
                 } else {
                     yearOpt.setSelected(true);
                 }
-                reportPanel.setModeString("năm");
                 reportPanel.getTarget().setText("Năm");
                 reportPanel.getHeader().setText("Doanh thu theo năm");
                 reportPanel.resetData();
@@ -108,7 +106,6 @@ class ButtonPanel extends JPanel {
                 } else {
                     monthOpt.setSelected(true);
                 }
-                reportPanel.setModeString("tháng");
                 reportPanel.getTarget().setText("Tháng");
                 reportPanel.getHeader().setText("Doanh thu theo tháng");
                 reportPanel.resetData();
@@ -125,7 +122,6 @@ class ButtonPanel extends JPanel {
                 } else {
                     dayOpt.setSelected(true);
                 }
-                reportPanel.setModeString("ngày");
                 reportPanel.getTarget().setText("Ngày");
                 reportPanel.getHeader().setText("Doanh thu theo ngày");
                 reportPanel.resetData();
@@ -247,23 +243,6 @@ class ReportPanel extends JPanel {
     private JTextArea txtBestSeller;
     private JPanel pHeader, pIncome, pBestSeller, pOldStock, pTarget;
     private JButton search, showOldStock;
-    private Mode mode = Mode.DAY;
-    private String modeString;
-
-    public void setMode(Mode mode) {
-        this.mode = mode;
-    }
-
-    public void getModeString() {
-        if (mode == Mode.DAY)
-            modeString = "ngày";
-        else
-            modeString = "tháng";
-    }
-
-    public void setModeString(String modeString) {
-        this.modeString = modeString;
-    }
 
     public JLabel getTarget() {
         return target;
@@ -281,17 +260,16 @@ class ReportPanel extends JPanel {
 
     public ReportPanel(JFrame menuReport) {
         setLayout(new GridLayout(5, 1));
-        getModeString();
 
         pHeader = new JPanel();
         pHeader.setLayout(new FlowLayout(FlowLayout.CENTER));
-        header = new JLabel("Doanh thu theo " + modeString);
+        header = new JLabel("Doanh thu theo ngày");
         pHeader.add(header);
         add(pHeader);
 
         pTarget = new JPanel();
         pTarget.setLayout(new FlowLayout(FlowLayout.LEFT));
-        target = new JLabel(modeString.substring(0, 1).toUpperCase() + modeString.substring(1).toLowerCase());
+        target = new JLabel("Ngày");
         txtTarget = new JTextField(25);
         search = new JButton("Tìm kiếm");
         initActionSearch(search, menuReport);
