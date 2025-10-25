@@ -10,8 +10,6 @@ import java.util.logging.Level;
 import java.util.ArrayList;
 import Connection.DataConnection;
 
-// làm phần sản phẩm bán chạy nhất;
-
 public class ReportBusiness {
     public static BigDecimal getIncome(String keyword) {
         BigDecimal result = new BigDecimal("0");
@@ -56,7 +54,7 @@ public class ReportBusiness {
                              JOIN invoice AS i ON i.idInvoice = it.idInvoice 
                              WHERE i.date LIKE ?
                              GROUP BY p.idProduct
-                             ORDER BY sumQty DESC
+                             ORDER BY sumQty DESC, p.name ASC
                              LIMIT 3;
                     """;
 

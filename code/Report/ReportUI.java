@@ -15,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
+import javax.swing.JDialog;
 import Mode.Mode;
 import Format.Format;
 import Connection.DataConnection;
@@ -27,54 +28,107 @@ import java.util.logging.Level;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;;
 
-// làm thông báo khi chưa nhập ngày trong báo cáo, làm thêm phần báo cáo năm, làm bản word project
+class Inform {
+    private static JButton okBt;
+    private static JLabel lbInform;
+    private static JPanel pButton, pInform;
+    private static JDialog inform;
+
+    public static void initInform(JFrame menuWarehouseDetail, String message) {
+        inform = new JDialog(menuWarehouseDetail, "Thông báo", true);
+        inform.setLayout(new GridLayout(2, 1));
+        inform.setSize(300, 200);
+        inform.setLocationRelativeTo(menuWarehouseDetail);
+
+        okBt = new JButton("Đóng");
+        okBt.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                inform.dispose();
+            }
+        });
+        pButton = new JPanel();
+        pButton.setLayout(new FlowLayout(FlowLayout.CENTER));
+        pButton.add(okBt);
+
+        pInform = new JPanel();
+        pInform.setLayout(new FlowLayout(FlowLayout.CENTER));
+        lbInform = new JLabel(message);
+        pInform.add(lbInform);
+
+        inform.add(pInform);
+        inform.add(pButton);
+        inform.setVisible(true);
+    }
+}
 
 class ButtonPanel extends JPanel {
-    private JRadioButton monthOpt, dayOpt;
+    private JRadioButton monthOpt, dayOpt, yearOpt;
 
     public ButtonPanel(ReportPanel reportPanel) {
         setLayout(new FlowLayout(FlowLayout.CENTER));
 
+        yearOpt = new JRadioButton("Năm");
         monthOpt = new JRadioButton("Tháng");
         dayOpt = new JRadioButton("Ngày");
         dayOpt.setSelected(true);
-        initActionDay(monthOpt, dayOpt, reportPanel);
-        initActionMonth(monthOpt, dayOpt, reportPanel);
+        initActionDay(monthOpt, dayOpt, reportPanel, yearOpt);
+        initActionMonth(monthOpt, dayOpt, reportPanel, yearOpt);
+        initActionYear(monthOpt, dayOpt, reportPanel, yearOpt);
 
         add(dayOpt);
         add(monthOpt);
+        add(yearOpt);
 
         setVisible(true);
     }
 
-    public void initActionMonth(JRadioButton monthOpt, JRadioButton dayOpt, ReportPanel reportPanel) {
+    public void initActionYear(JRadioButton monthOpt, JRadioButton dayOpt, ReportPanel reportPanel, JRadioButton yearOpt) {
+        yearOpt.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                if (yearOpt.isSelected()) {
+                    dayOpt.setSelected(false);
+                    monthOpt.setSelected(false);
+                } else {
+                    yearOpt.setSelected(true);
+                }
+                reportPanel.setModeString("năm");
+                reportPanel.getTarget().setText("Năm");
+                reportPanel.getHeader().setText("Doanh thu theo năm");
+                reportPanel.resetData();
+            }
+        });
+    }
+
+    public void initActionMonth(JRadioButton monthOpt, JRadioButton dayOpt, ReportPanel reportPanel, JRadioButton yearOpt) {
         monthOpt.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 if (monthOpt.isSelected()) {
                     dayOpt.setSelected(false);
-                }
-                else {
+                    yearOpt.setSelected(false);
+                } else {
                     monthOpt.setSelected(true);
                 }
                 reportPanel.setModeString("tháng");
                 reportPanel.getTarget().setText("Tháng");
                 reportPanel.getHeader().setText("Doanh thu theo tháng");
+                reportPanel.resetData();
             }
         });
     }
 
-    public void initActionDay(JRadioButton monthOpt, JRadioButton dayOpt, ReportPanel reportPanel) {
+    public void initActionDay(JRadioButton monthOpt, JRadioButton dayOpt, ReportPanel reportPanel, JRadioButton yearOpt) {
         dayOpt.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 if (dayOpt.isSelected()) {
                     monthOpt.setSelected(false);
-                }
-                else {
+                    yearOpt.setSelected(false);
+                } else {
                     dayOpt.setSelected(true);
                 }
                 reportPanel.setModeString("ngày");
                 reportPanel.getTarget().setText("Ngày");
                 reportPanel.getHeader().setText("Doanh thu theo ngày");
+                reportPanel.resetData();
             }
         });
     }
@@ -188,8 +242,6 @@ class OldStock extends JFrame {
 }
 
 class ReportPanel extends JPanel {
-    // doanh thu theo năm/tháng/ngày, các hàng: doanh thu, 3 sản phẩm bán chạy, so
-
     private JLabel header, income, bestSeller, OldStock, target;
     private JTextField txtIncome, txtTarget, duration;
     private JTextArea txtBestSeller;
@@ -205,7 +257,8 @@ class ReportPanel extends JPanel {
     public void getModeString() {
         if (mode == Mode.DAY)
             modeString = "ngày";
-        else modeString = "tháng";
+        else
+            modeString = "tháng";
     }
 
     public void setModeString(String modeString) {
@@ -220,7 +273,13 @@ class ReportPanel extends JPanel {
         return header;
     }
 
-    public ReportPanel() {
+    public void resetData() {
+        txtBestSeller.setText("");
+        txtIncome.setText("");
+        txtTarget.setText("");
+    }
+
+    public ReportPanel(JFrame menuReport) {
         setLayout(new GridLayout(5, 1));
         getModeString();
 
@@ -235,7 +294,7 @@ class ReportPanel extends JPanel {
         target = new JLabel(modeString.substring(0, 1).toUpperCase() + modeString.substring(1).toLowerCase());
         txtTarget = new JTextField(25);
         search = new JButton("Tìm kiếm");
-        initActionSearch(search);
+        initActionSearch(search, menuReport);
         pTarget.add(target);
         pTarget.add(txtTarget);
         pTarget.add(search);
@@ -284,14 +343,19 @@ class ReportPanel extends JPanel {
         });
     }
 
-    public void initActionSearch(JButton search) {
+    public void initActionSearch(JButton search, JFrame menuReport) {
         search.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 String key = txtTarget.getText();
-                String totalIncome = String.valueOf(ReportBusiness.getIncome(key));
-                String bestSellers = ReportBusiness.getBestSeller(key);
-                txtIncome.setText(Format.normalizeNumber(totalIncome) + " VND");
-                txtBestSeller.setText(bestSellers);
+                if (key.equals("") == false) {
+                    String totalIncome = String.valueOf(ReportBusiness.getIncome(key));
+                    String bestSellers = ReportBusiness.getBestSeller(key);
+                    txtIncome.setText(Format.normalizeNumber(totalIncome) + " VND");
+                    txtBestSeller.setText(bestSellers);
+                }
+                else {
+                    Inform.initInform(menuReport, "Vui lòng nhập thông tin tìm kiếm");
+                }
             }
         });
     }
@@ -303,7 +367,7 @@ public class ReportUI {
         menuReport.setSize(600, 500);
         menuReport.setLayout(new BorderLayout());
 
-        ReportPanel reportPanel = new ReportPanel();
+        ReportPanel reportPanel = new ReportPanel(menuReport);
         menuReport.add(reportPanel, BorderLayout.CENTER);
 
         ButtonPanel buttonPanel = new ButtonPanel(reportPanel);

@@ -174,16 +174,18 @@ class SearchPanel extends JPanel {
         searchBt.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 String keyword = text.getText();
-                ArrayList<Invoice> list = InvoiceBusiness.showListInvoice(keyword);
+                if (keyword.equals("") == false) {
+                    ArrayList<Invoice> list = InvoiceBusiness.showListInvoice(keyword);
 
-                DefaultTableModel dtm = invoicePanel.getDtm();
-                dtm.setRowCount(0);
-                for (Invoice i : list) {
-                    Object[] row = { i.getIdInvoice(), Format.normalizeNumber(String.valueOf(i.getTotal())),
-                            i.getDate(), i.getIdCustomer() };
-                    dtm.addRow(row);
+                    DefaultTableModel dtm = invoicePanel.getDtm();
+                    dtm.setRowCount(0);
+                    for (Invoice i : list) {
+                        Object[] row = { i.getIdInvoice(), Format.normalizeNumber(String.valueOf(i.getTotal())),
+                                i.getDate(), i.getIdCustomer() };
+                        dtm.addRow(row);
+                    }
+                    invoicePanel.getTableInvoice().setModel(dtm);
                 }
-                invoicePanel.getTableInvoice().setModel(dtm);
             }
         });
     }

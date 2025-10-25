@@ -27,8 +27,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ArrayList;
 
-//chọn tên liên kết phù hợp trong phần mô tả trên ggdoc, tạo báo cáo doanh thu theo tháng (select từ nhiều bảng)
-
 class ButtonDetailPanel extends JPanel {
     private JButton closeBt, acptBt, okBt;
     private JDialog inform;
@@ -208,15 +206,17 @@ class SearchPanel extends JPanel {
         searchBt.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 String keyword = text.getText();
-                ArrayList<Customer> list = CustomerBusiness.showListCustomer(keyword);
+                if (keyword.equals("") == false) {
+                    ArrayList<Customer> list = CustomerBusiness.showListCustomer(keyword);
 
-                DefaultTableModel dtm = panelCustomer.getDtm();
-                dtm.setRowCount(0);
-                for (Customer i : list) {
-                    Object[] row = { i.getId(), i.getName(), i.getPhone() };
-                    dtm.addRow(row);
+                    DefaultTableModel dtm = panelCustomer.getDtm();
+                    dtm.setRowCount(0);
+                    for (Customer i : list) {
+                        Object[] row = { i.getId(), i.getName(), i.getPhone() };
+                        dtm.addRow(row);
+                    }
+                    panelCustomer.getTableCustomer().setModel(dtm);
                 }
-                panelCustomer.getTableCustomer().setModel(dtm);
             }
         });
     }

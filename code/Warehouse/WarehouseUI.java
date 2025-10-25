@@ -97,17 +97,20 @@ class SearchPanel extends JPanel {
         searchBt.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 String keyword = text.getText();
-                ArrayList<Warehouse> list = WarehouseBusiness.showListWarehouse(keyword);
+                if (keyword.equals("") == false) {
+                    ArrayList<Warehouse> list = WarehouseBusiness.showListWarehouse(keyword);
 
-                DefaultTableModel dtm = warehousePanel.getDtm();
-                dtm.setRowCount(0);
-                for (Warehouse i : list) {
-                    Object[] row = { i.getIdWarehouse(), i.getAddress(),
-                            Format.normalizeNumber(String.valueOf(i.getMaxCapacity())),
-                            Format.normalizeNumber(String.valueOf(WarehouseBusiness.getCurrentCapacity(i.getIdWarehouse()))) };
-                    dtm.addRow(row);
+                    DefaultTableModel dtm = warehousePanel.getDtm();
+                    dtm.setRowCount(0);
+                    for (Warehouse i : list) {
+                        Object[] row = { i.getIdWarehouse(), i.getAddress(),
+                                Format.normalizeNumber(String.valueOf(i.getMaxCapacity())),
+                                Format.normalizeNumber(
+                                        String.valueOf(WarehouseBusiness.getCurrentCapacity(i.getIdWarehouse()))) };
+                        dtm.addRow(row);
+                    }
+                    warehousePanel.getTableWarehouse().setModel(dtm);
                 }
-                warehousePanel.getTableWarehouse().setModel(dtm);
             }
         });
     }

@@ -369,16 +369,19 @@ class SearchPanel extends JPanel {
         searchBt.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 String keyword = text.getText();
-                ArrayList<Product> list = ProductBusiness.showListProduct(keyword);
+                if (keyword.equals("") == false) {
+                    ArrayList<Product> list = ProductBusiness.showListProduct(keyword);
 
-                DefaultTableModel dtm = productPanel.getDtm();
-                dtm.setRowCount(0);
-                for (Product i : list) {
-                    Object[] row = { i.getIdProduct(), i.getName(), Format.normalizeNumber(String.valueOf(i.getCost())),
-                            i.getOrigin(), i.getType() };
-                    dtm.addRow(row);
+                    DefaultTableModel dtm = productPanel.getDtm();
+                    dtm.setRowCount(0);
+                    for (Product i : list) {
+                        Object[] row = { i.getIdProduct(), i.getName(),
+                                Format.normalizeNumber(String.valueOf(i.getCost())),
+                                i.getOrigin(), i.getType() };
+                        dtm.addRow(row);
+                    }
+                    productPanel.getTableProduct().setModel(dtm);
                 }
-                productPanel.getTableProduct().setModel(dtm);
             }
         });
     }
